@@ -2,27 +2,28 @@
 
 import { useOrganizationList } from "@clerk/nextjs";
 import { Item } from "./item";
-import { Hint } from "../hint";
 
-export const List = () => {
+export function List() {
   const { userMemberships } = useOrganizationList({
     userMemberships: {
       infinite: true,
     },
   });
 
-  if (!userMemberships.data?.length) return null;
+  if (userMemberships.data?.length === 0) return null;
 
   return (
     <ul className="space-y-4">
-      {userMemberships.data.map((mem) => (
-        <Item
-          key={mem.organization.id}
-          id={mem.organization.id}
-          name={mem.organization.name}
-          imageUrl={mem.organization.imageUrl}
-        />
-      ))}
+      {userMemberships.data?.map((membership) => {
+        return (
+          <Item
+            id={membership.organization.id}
+            key={membership.organization.id}
+            imageUrl={membership.organization.imageUrl}
+            name={membership.organization.name}
+          />
+        );
+      })}
     </ul>
   );
-};
+}

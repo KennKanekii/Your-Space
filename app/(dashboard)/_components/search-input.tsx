@@ -6,12 +6,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
 
-export const SearchInput = () => {
+export function SearchInput() {
   const router = useRouter();
-  const [value, setValue] = useState("");
-  const [debouncedValue] = useDebounceValue(value, 500);
+  const [debounceValue, setValue] = useDebounceValue("", 500);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setValue(e.target.value);
   };
 
@@ -20,13 +19,18 @@ export const SearchInput = () => {
       {
         url: "/",
         query: {
-          search: debouncedValue,
+          search: debounceValue,
         },
       },
-      { skipEmptyString: true, skipNull: true }
+      {
+        skipEmptyString: true,
+        skipNull: true,
+      }
     );
+
     router.push(url);
-  }, [debouncedValue, router]);
+  }, [debounceValue, router]);
+
   return (
     <div className="w-full relative">
       <Search className="absolute top-1/2 left-3 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -34,8 +38,7 @@ export const SearchInput = () => {
         className="w-full max-w-[516px] pl-9"
         placeholder="Search boards"
         onChange={handleChange}
-        value={value}
       />
     </div>
   );
-};
+}
