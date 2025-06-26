@@ -15,7 +15,7 @@ const font = Poppins({ subsets: ['latin'], weight: ['600'] })
 
 export const OrgSidebar = () => {
   const searchParams = useSearchParams()
-  const favorites = searchParams.get('favorites')
+  const favorites = searchParams.get("favorites");
 
   const orgTileStyles = {
     variables: {
@@ -76,5 +76,7 @@ export const OrgSidebar = () => {
         </Button>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default OrgSidebar;
