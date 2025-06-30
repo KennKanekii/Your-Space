@@ -59,8 +59,8 @@ export type TextLayer = {
   value?: string;
 };
 
-export type Note = {
-  type: LayerType.Text;
+export type NoteLayer = {
+  type: LayerType.Note;
   x: number;
   y: number;
   height: number;
@@ -95,11 +95,11 @@ export type CanvasState =
   | {
       mode: CanvasMode.SelectionNet;
       origin: Point; // start point x0, y0
-      cursor?: Point; // current point of the selection net
+      current?: Point; // current point of the selection net
     }
   | {
       mode: CanvasMode.Translating;
-      cursor: Point;
+      current: Point;
     }
   | {
       mode: CanvasMode.Inserting;
@@ -131,3 +131,10 @@ export enum CanvasMode {
   Resizing,
   Pencil,
 }
+
+export type Layer =
+  | RectangleLayer
+  | EllipseLayer
+  | PathLayer
+  | TextLayer
+  | NoteLayer;
