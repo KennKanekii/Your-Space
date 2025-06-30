@@ -25,7 +25,7 @@ export const SelectionTools = memo(
         const liveLayerIds = storage.get("layerIds");
         const indices: number[] = [];
 
-        const arr = liveLayerIds.toArray();
+        const arr = liveLayerIds.toImmutable();
 
         for (let i = 0; i < arr.length; i++) {
           if (selection.includes(arr[i])) {
@@ -45,7 +45,7 @@ export const SelectionTools = memo(
         const liveLayerIds = storage.get("layerIds");
         const indices: number[] = [];
 
-        const arr = liveLayerIds.toArray();
+        const arr = liveLayerIds.toImmutable();
 
         for (let i = 0; i < arr.length; i++) {
           if (selection.includes(arr[i])) {
@@ -93,12 +93,12 @@ export const SelectionTools = memo(
       >
         <ColorPicker onChange={setFill} />
         <div className="flex flex-col gap-y-0.5">
-          <Hint label="Bring to front">
+          <Hint label="move to front">
             <Button variant="board" size="icon" onClick={moveToFront}>
               <BringToFront />
             </Button>
           </Hint>{" "}
-          <Hint label="Bring to front" side="bottom">
+          <Hint label="move to back" side="bottom">
             <Button variant="board" size="icon" onClick={moveToBack}>
               <SendToBack />
             </Button>
