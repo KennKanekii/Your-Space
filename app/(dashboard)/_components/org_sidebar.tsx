@@ -2,20 +2,73 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { toast } from "sonner";
+import { useState } from "react";
+import { useAction, useQuery } from "convex/react";
 import { useSearchParams } from 'next/navigation'
 import { Poppins } from 'next/font/google'
-import { LayoutDashboard, Star } from 'lucide-react'
-import { OrganizationSwitcher } from '@clerk/nextjs'
+import { Banknote, LayoutDashboard, Star } from 'lucide-react'
+import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs";
 
 import { Button } from '@/components/ui/button'
 
 import { cn } from '@/lib/utils'
+import { api } from "@/convex/_generated/api";
+import { Badge } from "@/components/ui/badge";
 
 const font = Poppins({ subsets: ['latin'], weight: ['600'] })
 
 export const OrgSidebar = () => {
   const searchParams = useSearchParams()
   const favorites = searchParams.get("favorites");
+
+  const { organization } = useOrganization();
+
+  const [pending, setPending] = useState(false);
+
+  const createOrder = async () => {
+    const res = await fetch("/api/razorpay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: 2000 }), // ₹2000 example
+    });
+    return res.json();
+  };
+
+  const onClick = async () => {
+    if (!organization?.id) return;
+    setPending(true);
+
+    try {
+      const order = await createOrder();
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        amount: order.amount,
+        currency: order.currency,
+        name: "YourSpace Pro",
+        description: "Unlimited boards for your organization",
+        order_id: order.id,
+        handler: function (response: any) {
+          // Optionally send response to backend here for verification
+          toast.success("Payment Successful!");
+          console.log(response);
+        },
+        prefill: {
+          name: "User Name",
+          email: "user@example.com",
+        },
+        theme: { color: "#ffbf42" },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      toast.error("Payment failed. Try again.");
+    } finally {
+      setPending(false);
+    }
+  };
 
   const orgTileStyles = {
     variables: {
@@ -49,6 +102,7 @@ export const OrgSidebar = () => {
           <span className={cn('font-semibold text-2xl', font.className)}>
             YourSpace
           </span>
+
         </div>
       </Link>
       <OrganizationSwitcher hidePersonal appearance={orgTileStyles} />
@@ -73,6 +127,16 @@ export const OrgSidebar = () => {
           <Link href={{ pathname: "/", query: { favorites: true } }}>
             <Star className="h-4 w-4 mr-2" /> Favorite boards
           </Link>
+        </Button>
+        <Button
+          onClick={onClick}
+          disabled={pending}
+          variant="ghost"
+          size="lg"
+          className="font-normal justify-start px-2 w-full"
+        >
+          <Banknote className="h-4 w-4 mr-2" />
+          {pending ? "Processing..." : "Upgrade with Razorpay"}
         </Button>
       </div>
     </div>

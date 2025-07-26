@@ -2,6 +2,7 @@
 
 import { api } from "@/convex/_generated/api";
 import { useApiMutation } from "@/hooks/use-api-mutation";
+import { useProModal } from "@/store/use-pro-modal";
 import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -17,6 +18,7 @@ export const NewBoardButton = ({
   disabled = false,
 }: NewBoardButtonProps) => {
   const router = useRouter();
+  const { onOpen } = useProModal();
   const { mutate, pending } = useApiMutation(api.board.create);
 
   const onClick = () => {
@@ -31,7 +33,10 @@ export const NewBoardButton = ({
         toast.success("Board created!");
         router.push(`/board/${id}`);
       })
-      .catch((err) => toast.error("Failed to create board"));
+      .catch((err) => {
+        toast.error("Failed to create board");
+        onOpen();
+      });
   };
 
   return (
